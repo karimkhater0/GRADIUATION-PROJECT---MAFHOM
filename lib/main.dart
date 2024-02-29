@@ -12,7 +12,7 @@ import 'modules/login/forget_password_screen.dart';
 
 
 void main() {
-
+  WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = MyBlocObserver();
   DioHelper.init();
   runApp(const MyApp());

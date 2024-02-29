@@ -41,6 +41,10 @@ dependencies:
   curved_navigation_bar: ^1.0.3
   fluttertoast: ^8.2.4
   dio: ^5.4.0
+  #tflite: ^1.1.2
+  camera: ^0.10.5+9
+  speech_to_text: ^6.6.1
+  avatar_glow: ^3.0.1
 
 dev_dependencies:
   flutter_test:

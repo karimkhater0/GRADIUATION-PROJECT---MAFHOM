@@ -1,29 +1,33 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:mafhom/shared/constants.dart';
 
-import '../../shared/constants.dart';
+class TextToSignCameraScreen extends StatefulWidget {
+  TextToSignCameraScreen({super.key});
 
-class STTScreen extends StatefulWidget {
+
   @override
-  State<STTScreen> createState() => _STTScreenState();
+  State<TextToSignCameraScreen> createState() => _TextToSignCameraScreenState();
 }
 
-class _STTScreenState extends State<STTScreen> {
+class _TextToSignCameraScreenState extends State<TextToSignCameraScreen> {
   late List<CameraDescription> cameras;
 
   late CameraController cameraController;
-
   bool isCameraReady = false;
+
   int direction = 0;
 
   @override
   void initState() {
-    startCamera(direction);
+
+    startCamera(0);
     // TODO: implement initState
     super.initState();
   }
 
   void startCamera(int direction) async {
+
     cameras = await availableCameras();
     cameraController = CameraController(
       cameras[direction],
@@ -39,15 +43,16 @@ class _STTScreenState extends State<STTScreen> {
     }).catchError((e) {
       print(e);
     });
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 2),(){
       setState(() {
-        isCameraReady = true;
+        isCameraReady=true;
       });
     });
   }
 
   Future<void> openCamera() async {
     WidgetsFlutterBinding.ensureInitialized();
+
   }
 
   @override
@@ -63,38 +68,37 @@ class _STTScreenState extends State<STTScreen> {
     return isCameraReady
         ? Scaffold(
             body: Stack(
-              alignment: AlignmentDirectional.topEnd,
+              alignment: AlignmentDirectional.bottomCenter,
               children: [
                 Container(
-                    height: double.infinity,
                     width: double.infinity,
+                    height: double.infinity,
                     child: CameraPreview(cameraController)),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: SafeArea(
-                    child: FloatingActionButton(
-                      onPressed: (){
-                        setState(() {
-                          direction = direction == 0 ? 1 :0;
-                          startCamera(direction);
-                        });
-                      },
-                      child: Icon(Icons.cameraswitch,color: Colors.white,),
-                      shape: CircleBorder(),
-                      backgroundColor: primaryColor,
+                  child: FloatingActionButton(
+                    onPressed: (){
+                      cameraController.takePicture().then((XFile? file) {
+                        if(mounted)
+                          {
+                             if(file != null){
+                               print("Picture saved to ${file.path}");
+                             }
+                          }
+                      });
+                    },
+                    child: Icon(Icons.camera_sharp,color: Colors.white,),
+                    shape: CircleBorder(),
+                    backgroundColor: primaryColor,
 
-                    ),
                   ),
                 ),
-
               ],
             ),
           )
         : Container(
-            decoration: backgroundDecoration,
             width: double.infinity,
             height: double.infinity,
-
-          );
+            color: Colors.black,);
   }
 }

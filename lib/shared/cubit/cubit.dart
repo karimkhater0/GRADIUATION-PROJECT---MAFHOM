@@ -1,4 +1,3 @@
-import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mafhom/modules/account/account_screen.dart';
@@ -9,6 +8,7 @@ import 'package:mafhom/modules/text_to_sign/text_to_sign_screen.dart';
 import 'package:mafhom/shared/cubit/states.dart';
 import 'package:mafhom/shared/dio_helper.dart';
 import 'package:mafhom/shared/end_points.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 import '../../modules/sign_to_text/sign_to_text_screen.dart';
 
@@ -21,13 +21,16 @@ class AppCubit extends Cubit<AppStates> {
   bool isPasswordHidden = true;
   int currentIndex = 0;
   List<Widget> screens = [
-    const TTSScreen(),
-    const STTScreen(),
+    TTSScreen(),
+    STTScreen(),
     const SavedScreen(),
     const AccountScreen(),
     LoginScreen(),
     RegisterScreen(),
   ];
+  bool isListening = false;
+  SpeechToText? speech;
+  String text ='Enter your text here';
 
   void changeOnBoardingPage(int index) {
     if (index == 2) {
@@ -95,5 +98,31 @@ class AppCubit extends Cubit<AppStates> {
       print(error.toString());
       emit(ShopRegisterErrorState(error.toString()));
     });
+  }
+
+  void listen() async {
+    if (!isListening) {
+      bool? available = await speech?.initialize(
+        onStatus: (val) => print('onStatus: $val'),
+        onError: (val) => print('onError: $val'),
+      );
+      if (available==true) {
+        isListening = true;
+        emit(AppChangeListeningState());
+        speech?.listen(
+          onResult: (val) {
+            text = val.recognizedWords;
+            emit(AppChangeTextState());
+
+          }
+        );
+      }
+    }
+    else {
+      isListening = false;
+      emit(AppChangeListeningState());
+      speech?.stop();
+      print(text);
+    }
   }
 }

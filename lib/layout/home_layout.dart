@@ -21,7 +21,6 @@ class HomeLayout extends StatelessWidget {
             return Container(
 
               child: Scaffold(
-
                 body: cubit.screens[cubit.currentIndex],
                 bottomNavigationBar: CurvedNavigationBar(
 

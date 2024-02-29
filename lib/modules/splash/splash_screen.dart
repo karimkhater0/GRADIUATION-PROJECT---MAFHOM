@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mafhom/layout/home_layout.dart';
 import 'package:mafhom/modules/onboarding/onboarding_screen.dart';
 
 import '../../shared/components.dart';
@@ -22,10 +23,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Future.delayed(const Duration(seconds: 2),(){
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context)=> OnBoardingScreen()),
-              (route) => false);
+      navigateAndFinish(context, HomeLayout());
     });
   }
   

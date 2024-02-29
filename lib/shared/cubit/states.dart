@@ -51,3 +51,9 @@ class ShopChangePwErrorState extends AppStates {
   final String error;
   ShopChangePwErrorState(this.error);
 }
+
+class AppChangeListeningState extends AppStates {}
+
+class AppChangeTextState extends AppStates {}
+
+
