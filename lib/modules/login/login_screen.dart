@@ -73,7 +73,7 @@ class LoginScreen extends StatelessWidget {
                         const SizedBox(
                           height: 30,
                         ),
-                        (state is! ShopLoginLoadingState)
+                        (state is! LoginLoadingState)
                             ? defaultButton(
                                 backGround: primaryColor,
                                 text: 'Login',
@@ -83,7 +83,13 @@ class LoginScreen extends StatelessWidget {
                                       email: emailController.text,
                                       password: passwordController.text,
                                     );
-                                    navigateAndFinish(context, HomeLayout());
+                                    // navigate and finish causing error !!!
+                                    // I/flutter ( 7327): onError -- AppCubit, Bad state: Cannot emit new states after calling close
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      return HomeLayout();
+                                    }));
+                                    // navigateAndFinish(context, HomeLayout());
                                   }
                                 },
                                 width: screenWidth(context) * 0.6)

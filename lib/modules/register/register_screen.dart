@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mafhom/layout/home_layout.dart';
 import 'package:mafhom/modules/login/login_screen.dart';
 import 'package:mafhom/modules/text_to_sign/text_to_sign_screen.dart';
 import 'package:mafhom/shared/components.dart';
@@ -83,7 +84,7 @@ class RegisterScreen extends StatelessWidget {
                         const SizedBox(
                           height: 30,
                         ),
-                        (state is! ShopRegisterLoadingState)
+                        (state is! RegisterLoadingState)
                             ? defaultButton(
                                 backGround: primaryColor,
                                 text: 'Register',
@@ -95,7 +96,12 @@ class RegisterScreen extends StatelessWidget {
                                       password:
                                           registeredPasswordController.text,
                                     );
-                                    navigateAndFinish(context, TTSScreen());
+                                    // navigate and finish causing error
+                                    // I/flutter ( 7327): onError -- AppCubit, Bad state: Cannot emit new states after calling close
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      return HomeLayout();
+                                    }));
                                   }
                                 },
                                 width: screenWidth(context) * 0.6)

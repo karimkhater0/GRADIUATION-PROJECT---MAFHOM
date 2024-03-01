@@ -6,54 +6,52 @@ class AppChangeOnBoardingState extends AppStates {}
 
 class AppChangeBottomNavBarState extends AppStates {}
 
-class ShopChangePasswordVisibilityState extends AppStates {}
+class ChangePasswordVisibilityState extends AppStates {}
 
-class ShopLoginInitialState extends AppStates {}
+class LoginInitialState extends AppStates {}
 
-class ShopLoginSuccessState extends AppStates {}
+class LoginSuccessState extends AppStates {}
 
-class ShopLoginLoadingState extends AppStates {}
+class LoginLoadingState extends AppStates {}
 
-class ShopRegisterInitialState extends AppStates {}
+class RegisterInitialState extends AppStates {}
 
-class ShopRegisterSuccessState extends AppStates {}
+class RegisterSuccessState extends AppStates {}
 
-class ShopRegisterLoadingState extends AppStates {}
+class RegisterLoadingState extends AppStates {}
 
-class ShopForgetPwInitialState extends AppStates {}
+class ForgetPwInitialState extends AppStates {}
 
-class ShopForgetPwSuccessState extends AppStates {}
+class ForgetPwSuccessState extends AppStates {}
 
-class ShopForgetPwLoadingState extends AppStates {}
+class ForgetPwLoadingState extends AppStates {}
 
-class ShopChangePwInitialState extends AppStates {}
+class ChangePwInitialState extends AppStates {}
 
-class ShopChangePwSuccessState extends AppStates {}
+class ChangePwSuccessState extends AppStates {}
 
-class ShopChangePwLoadingState extends AppStates {}
+class ChangePwLoadingState extends AppStates {}
 
-class ShopLoginErrorState extends AppStates {
+class LoginErrorState extends AppStates {
   final String error;
-  ShopLoginErrorState(this.error);
+  LoginErrorState(this.error);
 }
 
-class ShopRegisterErrorState extends AppStates {
+class RegisterErrorState extends AppStates {
   final String error;
-  ShopRegisterErrorState(this.error);
+  RegisterErrorState(this.error);
 }
 
-class ShopForgetPwErrorState extends AppStates {
+class ForgetPwErrorState extends AppStates {
   final String error;
-  ShopForgetPwErrorState(this.error);
+  ForgetPwErrorState(this.error);
 }
 
-class ShopChangePwErrorState extends AppStates {
+class ChangePwErrorState extends AppStates {
   final String error;
-  ShopChangePwErrorState(this.error);
+  ChangePwErrorState(this.error);
 }
 
 class AppChangeListeningState extends AppStates {}
 
 class AppChangeTextState extends AppStates {}
-
-

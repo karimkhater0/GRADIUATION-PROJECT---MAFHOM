@@ -11,15 +11,14 @@ import '../tts_camera/tts_camera_screen.dart';
 class TTSScreen extends StatelessWidget {
   TTSScreen({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (BuildContext context) => AppCubit(),
-      child: BlocConsumer<AppCubit,AppStates>(
-        listener: (BuildContext context, AppStates state) {  },
+      child: BlocConsumer<AppCubit, AppStates>(
+        listener: (BuildContext context, AppStates state) {},
         builder: (BuildContext context, AppStates state) {
-          AppCubit cubit =AppCubit.get(context);
+          AppCubit cubit = AppCubit.get(context);
           return Scaffold(
             body: SafeArea(
               child: Container(
@@ -39,7 +38,9 @@ class TTSScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15),
                           ),
                         ),
-                        SizedBox(height: screenHeight(context) * .0875,),
+                        SizedBox(
+                          height: screenHeight(context) * .0875,
+                        ),
 
                         ///TEXT BOX
                         Container(
@@ -52,13 +53,13 @@ class TTSScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 ///ENTER TEXT
                                 TextField(
-
                                   textDirection: TextDirection.rtl,
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
@@ -71,24 +72,24 @@ class TTSScreen extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     AvatarGlow(
-                                      animate: cubit.isListening,
+                                      animate: false,
                                       glowColor: primaryColor,
-                                      duration: const Duration(milliseconds: 2000),
+                                      duration:
+                                          const Duration(milliseconds: 2000),
                                       repeat: true,
                                       child: IconButton(
                                           onPressed: () {
                                             cubit.listen();
-                                          }, icon: Icon(Icons.mic)),
+                                          },
+                                          icon: Icon(Icons.mic)),
                                     ),
-
-
                                     IconButton(
                                         onPressed: () {},
                                         icon: Icon(Icons.bookmark_border)),
                                     IconButton(
                                         onPressed: () {
-                                          navigateTo(
-                                              context, TextToSignCameraScreen());
+                                          navigateTo(context,
+                                              TextToSignCameraScreen());
                                         },
                                         icon: Icon(Icons.camera_alt)),
                                   ],
@@ -105,10 +106,7 @@ class TTSScreen extends StatelessWidget {
             ),
           );
         },
-
       ),
     );
   }
-
-
 }

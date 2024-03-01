@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mafhom/layout/home_layout.dart';
 import 'package:mafhom/modules/account/account_screen.dart';
+import 'package:mafhom/modules/login/login_model.dart';
 import 'package:mafhom/modules/login/login_screen.dart';
 import 'package:mafhom/modules/register/register_screen.dart';
 import 'package:mafhom/modules/saved/saved_screen.dart';
 import 'package:mafhom/modules/text_to_sign/text_to_sign_screen.dart';
+import 'package:mafhom/shared/components.dart';
 import 'package:mafhom/shared/cubit/states.dart';
 import 'package:mafhom/shared/dio_helper.dart';
 import 'package:mafhom/shared/end_points.dart';
@@ -30,7 +33,7 @@ class AppCubit extends Cubit<AppStates> {
   ];
   bool isListening = false;
   SpeechToText? speech;
-  String text ='Enter your text here';
+  String text = 'Enter your text here';
 
   void changeOnBoardingPage(int index) {
     if (index == 2) {
@@ -54,34 +57,64 @@ class AppCubit extends Cubit<AppStates> {
     suffix = isPasswordHidden
         ? Icons.visibility_outlined
         : Icons.visibility_off_outlined;
-    emit(ShopChangePasswordVisibilityState());
+    emit(ChangePasswordVisibilityState());
   }
+
+  LoginModel? loginModel;
 
   void userLogin({
     required String email,
     required String password,
   }) {
-    emit(ShopLoginLoadingState());
+    emit(LoginLoadingState());
     DioHelper.postData(
       url: LOGIN,
       data: {
-        "email": email,
-        "password": password,
+        'email': email,
+        'password': password,
       },
     ).then((value) {
-      print(value.data);
-      emit(ShopLoginSuccessState());
-    }).catchError((error) {
-      emit(ShopLoginErrorState(error.toString()));
+      print(value?.data);
+      print(value?.data["token"]);
+      loginModel = LoginModel.fromJson(value.data);
+
+      print(loginModel?.message);
+      print(loginModel?.token);
+      emit(LoginSuccessState());
+      //navigateAndFinish(context, HomeLayout());
+    }).catchError((onError) {
+      emit(LoginErrorState(onError.toString()));
     });
   }
+
+  // void userLogin({
+  //   required String email,
+  //   required String password,
+  // }) {
+  //   emit(LoginLoadingState());
+  //   DioHelper.postData(
+  //     url: LOGIN,
+  //     data: {
+  //       "email": email,
+  //       "password": password,
+  //     },
+  //   ).then((value) {
+  //     var loginData = LoginModel.fromJson(value.data);
+  //     print(loginData);
+  //     print(value.data);
+
+  //     emit(LoginSuccessState());
+  //   }).catchError((error) {
+  //     emit(LoginErrorState(error.toString()));
+  //   });
+  // }
 
   void userRegister({
     required String username,
     required String email,
     required String password,
   }) {
-    emit(ShopRegisterInitialState());
+    emit(RegisterInitialState());
     DioHelper.postData(
       url: REGISTER,
       data: {
@@ -93,10 +126,10 @@ class AppCubit extends Cubit<AppStates> {
       },
     ).then((value) {
       print(value.data);
-      emit(ShopRegisterSuccessState());
+      emit(RegisterSuccessState());
     }).catchError((error) {
       print(error.toString());
-      emit(ShopRegisterErrorState(error.toString()));
+      emit(RegisterErrorState(error.toString()));
     });
   }
 
@@ -106,19 +139,15 @@ class AppCubit extends Cubit<AppStates> {
         onStatus: (val) => print('onStatus: $val'),
         onError: (val) => print('onError: $val'),
       );
-      if (available==true) {
+      if (available == true) {
         isListening = true;
         emit(AppChangeListeningState());
-        speech?.listen(
-          onResult: (val) {
-            text = val.recognizedWords;
-            emit(AppChangeTextState());
-
-          }
-        );
+        speech?.listen(onResult: (val) {
+          text = val.recognizedWords;
+          emit(AppChangeTextState());
+        });
       }
-    }
-    else {
+    } else {
       isListening = false;
       emit(AppChangeListeningState());
       speech?.stop();
