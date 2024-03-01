@@ -65,6 +65,7 @@ class AppCubit extends Cubit<AppStates> {
   void userLogin({
     required String email,
     required String password,
+    required context,
   }) {
     emit(LoginLoadingState());
     DioHelper.postData(
@@ -80,10 +81,13 @@ class AppCubit extends Cubit<AppStates> {
 
       print(loginModel?.message);
       print(loginModel?.token);
+      print(loginModel?.data?.email);
       emit(LoginSuccessState());
-      //navigateAndFinish(context, HomeLayout());
+      showToast(msg: "login success", state: ToastStates.SUCCESS);
+      navigateAndFinish(context, HomeLayout());
     }).catchError((onError) {
       emit(LoginErrorState(onError.toString()));
+      showToast(msg: "login faild", state: ToastStates.ERROR);
     });
   }
 

@@ -1,12 +1,13 @@
 class LoginModel {
   String? message;
   String? token;
+
   UserData? data;
 
   LoginModel.fromJson(Map<String, dynamic> json) {
     message = json["message"];
     token = json["token"];
-    data = json["data"];
+    data = UserData.fromJson(json["data"]);
   }
 }
 
@@ -22,16 +23,16 @@ class UserData {
   String? provider;
   int? v;
 
-  UserData.fromJson(Map<String, dynamic> json) {
-    id = json["_id"];
-    userName = json["userName"];
-    accountId = json["accountId"];
-    fullName = json["fullName"];
-    email = json["email"];
-    photo = json["photo"];
-    bio = json["bio"];
-    sentences = json["sentences"];
-    provider = json["provider"];
-    v = json["__v"];
+  UserData.fromJson(Map<String, dynamic> jason) {
+    id = jason["_id"];
+    userName = jason["userName"];
+    accountId = jason["accountId"];
+    fullName = jason["fullName"];
+    email = jason["email"];
+    photo = jason["photo"];
+    bio = jason["bio"];
+    sentences = jason["sentences"];
+    provider = jason["provider"];
+    v = jason["__v"];
   }
 }

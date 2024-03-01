@@ -80,15 +80,16 @@ class LoginScreen extends StatelessWidget {
                                 onPressed: () {
                                   if (formKeyReg.currentState!.validate()) {
                                     AppCubit.get(context).userLogin(
+                                      context: context,
                                       email: emailController.text,
                                       password: passwordController.text,
                                     );
                                     // navigate and finish causing error !!!
                                     // I/flutter ( 7327): onError -- AppCubit, Bad state: Cannot emit new states after calling close
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) {
-                                      return HomeLayout();
-                                    }));
+                                    // Navigator.push(context,
+                                    //     MaterialPageRoute(builder: (context) {
+                                    //   return HomeLayout();
+                                    // }));
                                     // navigateAndFinish(context, HomeLayout());
                                   }
                                 },

@@ -74,10 +74,11 @@ Widget formField({
                   },
                   icon: Icon(
                     AppCubit.get(context).suffix,
-
                   ),
                 )
-              : const SizedBox(width: 24,),
+              : const SizedBox(
+                  width: 24,
+                ),
         ),
       ),
     );
@@ -91,8 +92,8 @@ void showToast({
     toastLength: Toast.LENGTH_LONG,
     gravity: ToastGravity.BOTTOM,
     timeInSecForIosWeb: 5,
-    backgroundColor: changeToastColor(state),
-    textColor: Colors.white,
+    backgroundColor: Colors.green,
+    textColor: Colors.green,
     fontSize: 16.0,
   );
 }
