@@ -48,13 +48,31 @@ class OnBoardingScreen extends StatelessWidget {
       child: BlocConsumer<AppCubit, AppStates>(
         listener: (context, state) {},
         builder: (context, state) => Scaffold(
+
           body: SafeArea(
             child: Container(
               decoration: backgroundDecoration,
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                padding: const EdgeInsets.fromLTRB(20,5,20,12),
                 child: Column(
+
                   children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                            onPressed: (){
+                              navigateAndFinish(context, LoginScreen());
+                            },
+                            child: Text(
+                              'SKIP',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                            )),
+                      ],
+                    ),
                     Expanded(
                       child: PageView.builder(
                         physics: const BouncingScrollPhysics(),
@@ -79,30 +97,24 @@ class OnBoardingScreen extends StatelessWidget {
                             },
                           )
                         : Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              defaultButton(
-                                  text: 'skip',
-                                  textColor: Colors.black,
-                                  backGround: Colors.white,
-                                  width: MediaQuery.of(context).size.width * .3,
-                                  onPressed: () {
-                                    navigateAndFinish(context, LoginScreen());
-                                  }),
-                              defaultButton(
-                                  text: 'next',
-                                  backGround: primaryColor,
-                                  width: MediaQuery.of(context).size.width * .3,
-                                  onPressed: () {
-                                    print(screenWidth(context));
-                                    boardController.nextPage(
-                                      duration: const Duration(seconds: 1),
-                                      curve: Curves.fastEaseInToSlowEaseOut,
-                                    );
-                                  }),
-                            ],
-                          ),
-
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            FloatingActionButton(
+                              onPressed: () {
+                                boardController.nextPage(
+                                  duration: const Duration(seconds: 1),
+                                  curve: Curves.fastEaseInToSlowEaseOut,
+                                );
+                              },
+                              backgroundColor: primaryColor,
+                              shape: CircleBorder(),
+                              child: Icon(
+                                Icons.arrow_forward_ios,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
                   ],
                 ),
               ),
@@ -117,104 +129,101 @@ class OnBoardingScreen extends StatelessWidget {
   Widget buildBoardingItem(BoardingModel model, context) {
     double vectorWidth =
         screenWidth(context) <= 500.0 ? screenWidth(context) - 100 : 400.0;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(30, 60, 30, 60),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          ///IMAGE, VECTOR
-          Expanded(
-            flex: 3,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                CustomPaint(
-                  size: Size(vectorWidth, vectorWidth * model.value),
-                  painter: model.customPainter,
-                ),
-                Image(
-                  image: AssetImage(model.image),
-                  height: vectorWidth * model.value,
-                  fit: BoxFit.fitHeight,
-                ),
-              ],
-            ),
-          ),
-
-          ///INDICATOR
-          Expanded(
-            flex: 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SmoothPageIndicator(
-                  controller: boardController,
-                  effect: ExpandingDotsEffect(
-                    dotColor: Colors.black,
-                    activeDotColor: Colors.black,
-                    dotHeight: 12,
-                    expansionFactor: 3,
-                    dotWidth: 15,
-                    spacing: 26,
-                  ),
-                  count: 3,
-                ),
-
-                // FloatingActionButton(
-                //   onPressed: () {
-                //     if(isLast)
-                //     {
-                //
-                //       submit();
-                //     }
-                //     else
-                //     {
-                //       boardController.nextPage(
-                //         duration: const Duration(
-                //           microseconds: 750,
-                //         ),
-                //         curve: Curves.fastLinearToSlowEaseIn,
-                //       );
-                //     }
-                //
-                //
-                //   },
-                //   child: const Icon(
-                //       Icons.arrow_forward_ios
-                //   ),
-                // ),
-              ],
-            ),
-          ),
-
-          ///TITLE
-          Expanded(
-            flex: 1,
-            child: Text(
-              model.title,
-              maxLines: 3,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 29,
-                  overflow: TextOverflow.ellipsis),
-            ),
-          ),
-
-          ///BODY
-          Expanded(
-            flex: 2,
-            child: Text(
-              model.body,
-              maxLines: 6,
-              style: TextStyle(
-                fontSize: 20,
-                overflow: TextOverflow.ellipsis,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        ///IMAGE, VECTOR
+        Expanded(
+          flex: 3,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              CustomPaint(
+                size: Size(vectorWidth, vectorWidth * model.value),
+                painter: model.customPainter,
               ),
+              Image(
+                image: AssetImage(model.image),
+                height: vectorWidth * model.value,
+                fit: BoxFit.fitHeight,
+              ),
+            ],
+          ),
+        ),
+
+        ///INDICATOR
+        Expanded(
+          flex: 1,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SmoothPageIndicator(
+                controller: boardController,
+                effect: ExpandingDotsEffect(
+                  dotColor: Colors.black,
+                  activeDotColor: Colors.black,
+                  dotHeight: 12,
+                  expansionFactor: 3,
+                  dotWidth: 15,
+                  spacing: 26,
+                ),
+                count: 3,
+              ),
+
+              // FloatingActionButton(
+              //   onPressed: () {
+              //     if(isLast)
+              //     {
+              //
+              //       submit();
+              //     }
+              //     else
+              //     {
+              //       boardController.nextPage(
+              //         duration: const Duration(
+              //           microseconds: 750,
+              //         ),
+              //         curve: Curves.fastLinearToSlowEaseIn,
+              //       );
+              //     }
+              //
+              //
+              //   },
+              //   child: const Icon(
+              //       Icons.arrow_forward_ios
+              //   ),
+              // ),
+            ],
+          ),
+        ),
+
+        ///TITLE
+        Expanded(
+          flex: 1,
+          child: Text(
+            model.title,
+            maxLines: 3,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 30,
+                overflow: TextOverflow.ellipsis),
+          ),
+        ),
+
+        ///BODY
+        Expanded(
+          flex: 2,
+          child: Text(
+            model.body,
+            maxLines: 6,
+            style: TextStyle(
+              fontSize: 17,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

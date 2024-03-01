@@ -75,8 +75,8 @@ class AppCubit extends Cubit<AppStates> {
         'password': password,
       },
     ).then((value) {
-      print(value?.data);
-      print(value?.data["token"]);
+      print(value.data);
+      print(value.data["token"]);
       loginModel = LoginModel.fromJson(value.data);
 
       print(loginModel?.message);
