@@ -5,16 +5,18 @@ import 'package:mafhom/modules/splash/splash_screen.dart';
 import 'package:mafhom/shared/bloc_observer.dart';
 import 'package:mafhom/shared/constants.dart';
 import 'package:mafhom/shared/dio_helper.dart';
+import 'package:mafhom/shared/sharedpreferences.dart';
 
 import 'layout/home_layout.dart';
 import 'modules/login/forget_password_screen.dart';
 
-
-
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = MyBlocObserver();
   DioHelper.init();
+  await sharedPreferencesHelper.init();
+  // bool onboardingSubmit =
+  //     sharedPreferencesHelper.getData(key: "onboardingSubmit");
   runApp(const MyApp());
 }
 
@@ -31,7 +33,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Color(0xff4d689d)),
         useMaterial3: true,
       ),
-      home:SplashScreen(),
+      home: SplashScreen(),
     );
   }
 }

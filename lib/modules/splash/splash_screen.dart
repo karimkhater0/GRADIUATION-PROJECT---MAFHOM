@@ -3,13 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:mafhom/layout/home_layout.dart';
 import 'package:mafhom/modules/login/login_screen.dart';
 import 'package:mafhom/modules/onboarding/onboarding_screen.dart';
+import 'package:mafhom/shared/sharedpreferences.dart';
 
 import '../../shared/components.dart';
 import '../../shared/constants.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
-
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
@@ -19,10 +19,14 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     // TODO: implement initState
+
     super.initState();
+    bool onboardingSubmit =
+        sharedPreferencesHelper.getData(key: "onboardingSubmit");
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Future.delayed(const Duration(seconds: 2), () {
-      navigateAndFinish(context, OnBoardingScreen());
+      navigateAndFinish(
+          context, onboardingSubmit ? LoginScreen() : OnBoardingScreen());
     });
   }
 

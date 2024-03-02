@@ -45,6 +45,7 @@ dependencies:
   camera: ^0.10.5+9
   speech_to_text: ^6.6.1
   avatar_glow: ^3.0.1
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

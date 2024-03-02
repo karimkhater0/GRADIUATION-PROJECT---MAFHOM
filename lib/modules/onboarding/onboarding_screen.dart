@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mafhom/modules/login/login_screen.dart';
 import 'package:mafhom/shared/cubit/cubit.dart';
+import 'package:mafhom/shared/sharedpreferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../models/onboarding_model.dart';
@@ -38,6 +40,18 @@ class OnBoardingScreen extends StatelessWidget {
   ];
 
   var boardController = PageController();
+  void onboardingSubmit(context) {
+    sharedPreferencesHelper
+        .saveData(
+      key: "onboardingSubmit",
+      value: true,
+    )
+        .then((value) {
+      if (value) {
+        navigateAndFinish(context, LoginScreen());
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,28 +62,26 @@ class OnBoardingScreen extends StatelessWidget {
       child: BlocConsumer<AppCubit, AppStates>(
         listener: (context, state) {},
         builder: (context, state) => Scaffold(
-
           body: SafeArea(
             child: Container(
               decoration: backgroundDecoration,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20,5,20,12),
+                padding: const EdgeInsets.fromLTRB(20, 5, 20, 12),
                 child: Column(
-
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
-                            onPressed: (){
-                              navigateAndFinish(context, LoginScreen());
+                            onPressed: () {
+                              onboardingSubmit(context);
                             },
                             child: Text(
                               'SKIP',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             )),
                       ],
                     ),
@@ -93,28 +105,28 @@ class OnBoardingScreen extends StatelessWidget {
                             backGround: primaryColor,
                             width: MediaQuery.of(context).size.width * .60,
                             onPressed: () {
-                              navigateAndFinish(context, LoginScreen());
+                              onboardingSubmit(context);
                             },
                           )
                         : Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            FloatingActionButton(
-                              onPressed: () {
-                                boardController.nextPage(
-                                  duration: const Duration(seconds: 1),
-                                  curve: Curves.fastEaseInToSlowEaseOut,
-                                );
-                              },
-                              backgroundColor: primaryColor,
-                              shape: CircleBorder(),
-                              child: Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.white,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              FloatingActionButton(
+                                onPressed: () {
+                                  boardController.nextPage(
+                                    duration: const Duration(seconds: 1),
+                                    curve: Curves.fastEaseInToSlowEaseOut,
+                                  );
+                                },
+                                backgroundColor: primaryColor,
+                                shape: CircleBorder(),
+                                child: Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
                   ],
                 ),
               ),

@@ -78,9 +78,6 @@ class AppCubit extends Cubit<AppStates> {
       print(value.data);
       print(value.data["token"]);
       loginModel = LoginModel.fromJson(value.data);
-
-      print(loginModel?.message);
-      print(loginModel?.token);
       print(loginModel?.data?.email);
       emit(LoginSuccessState());
       showToast(msg: "login success", state: ToastStates.SUCCESS);
