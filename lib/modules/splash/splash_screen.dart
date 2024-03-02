@@ -21,12 +21,12 @@ class _SplashScreenState extends State<SplashScreen>
     // TODO: implement initState
 
     super.initState();
-    bool onboardingSubmit =
+    bool? onboardingSubmit =
         sharedPreferencesHelper.getData(key: "onboardingSubmit");
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Future.delayed(const Duration(seconds: 2), () {
-      navigateAndFinish(
-          context, onboardingSubmit ? LoginScreen() : OnBoardingScreen());
+      navigateAndFinish(context,
+          onboardingSubmit == true ? LoginScreen() : OnBoardingScreen());
     });
   }
 
