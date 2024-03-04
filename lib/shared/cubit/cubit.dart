@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mafhom/layout/home_layout.dart';
 import 'package:mafhom/modules/account/account_screen.dart';
-import 'package:mafhom/modules/login/login_model.dart';
+import 'package:mafhom/models/login_model.dart';
 import 'package:mafhom/modules/login/login_screen.dart';
 import 'package:mafhom/modules/register/register_screen.dart';
 import 'package:mafhom/modules/saved/saved_screen.dart';
@@ -11,6 +11,7 @@ import 'package:mafhom/shared/components.dart';
 import 'package:mafhom/shared/cubit/states.dart';
 import 'package:mafhom/shared/dio_helper.dart';
 import 'package:mafhom/shared/end_points.dart';
+import 'package:mafhom/shared/sharedpreferences.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 import '../../modules/sign_to_text/sign_to_text_screen.dart';
@@ -75,11 +76,8 @@ class AppCubit extends Cubit<AppStates> {
         'password': password,
       },
     ).then((value) {
-      print(value.data);
-      print(value.data["token"]);
       loginModel = LoginModel.fromJson(value.data);
-      print(loginModel?.data?.email);
-      emit(LoginSuccessState());
+      emit(LoginSuccessState(loginModel: loginModel));
       showToast(msg: "login success", state: ToastStates.SUCCESS);
       navigateAndFinish(context, HomeLayout());
     }).catchError((onError) {

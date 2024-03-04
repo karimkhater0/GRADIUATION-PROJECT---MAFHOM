@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mafhom/layout/home_layout.dart';
+import 'package:mafhom/models/login_model.dart';
 import 'package:mafhom/modules/login/forget_password_screen.dart';
 import 'package:mafhom/modules/register/register_screen.dart';
 import 'package:mafhom/modules/text_to_sign/text_to_sign_screen.dart';
 import 'package:mafhom/shared/components.dart';
 import 'package:mafhom/shared/constants.dart';
+import 'package:mafhom/shared/sharedpreferences.dart';
 
 import '../../shared/cubit/cubit.dart';
 import '../../shared/cubit/states.dart';
@@ -22,7 +24,14 @@ class LoginScreen extends StatelessWidget {
     return BlocProvider(
       create: (BuildContext context) => AppCubit(),
       child: BlocConsumer<AppCubit, AppStates>(
-        listener: (BuildContext context, state) {},
+        listener: (BuildContext context, state) {
+          if (state is LoginSuccessState) {
+            if (state.loginModel?.message == "Successful Login") {
+              sharedPreferencesHelper.saveData(
+                  key: "loginToken", value: state.loginModel?.token);
+            }
+          }
+        },
         builder: (BuildContext context, state) => Scaffold(
           body: Container(
             decoration: backgroundDecoration,
@@ -84,13 +93,6 @@ class LoginScreen extends StatelessWidget {
                                       email: emailController.text,
                                       password: passwordController.text,
                                     );
-                                    // navigate and finish causing error !!!
-                                    // I/flutter ( 7327): onError -- AppCubit, Bad state: Cannot emit new states after calling close
-                                    // Navigator.push(context,
-                                    //     MaterialPageRoute(builder: (context) {
-                                    //   return HomeLayout();
-                                    // }));
-                                    // navigateAndFinish(context, HomeLayout());
                                   }
                                 },
                                 width: screenWidth(context) * 0.6)

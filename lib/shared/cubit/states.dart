@@ -1,3 +1,5 @@
+import 'package:mafhom/models/login_model.dart';
+
 abstract class AppStates {}
 
 class AppInitialState extends AppStates {}
@@ -10,7 +12,11 @@ class ChangePasswordVisibilityState extends AppStates {}
 
 class LoginInitialState extends AppStates {}
 
-class LoginSuccessState extends AppStates {}
+class LoginSuccessState extends AppStates {
+  final LoginModel? loginModel;
+
+  LoginSuccessState({required this.loginModel});
+}
 
 class LoginLoadingState extends AppStates {}
 

@@ -23,10 +23,27 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     bool? onboardingSubmit =
         sharedPreferencesHelper.getData(key: "onboardingSubmit");
+    String? loginToken = sharedPreferencesHelper.getData(key: "loginToken");
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Future.delayed(const Duration(seconds: 2), () {
-      navigateAndFinish(context,
-          onboardingSubmit == true ? LoginScreen() : OnBoardingScreen());
+      if (onboardingSubmit == true && loginToken != null) {
+        navigateAndFinish(context, HomeLayout());
+      } else if (onboardingSubmit == true) {
+        navigateAndFinish(context, LoginScreen());
+      } else {
+        navigateAndFinish(context, OnBoardingScreen());
+      }
+      // if (onboardingSubmit == true) {
+      //   if (loginToken != "") {
+      //     navigateAndFinish(context, HomeLayout());
+      //   } else {
+      //     navigateAndFinish(context, LoginScreen());
+      //   }
+      // } else {
+      //   navigateAndFinish(context, OnBoardingScreen());
+      // }
+      // navigateAndFinish(context,
+      //     onboardingSubmit == true ? LoginScreen() : OnBoardingScreen());
     });
   }
 
