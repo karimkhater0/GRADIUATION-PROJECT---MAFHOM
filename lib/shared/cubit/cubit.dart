@@ -121,7 +121,7 @@ class AppCubit extends Cubit<AppStates> {
         "email": email,
         "password": password,
         "passwordConfirm": password,
-        "fullName": "momo yasser"
+        "fullName": username,
       },
     ).then((value) {
       print(value.data);

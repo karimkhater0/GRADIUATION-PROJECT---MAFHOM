@@ -29,6 +29,12 @@ class LoginScreen extends StatelessWidget {
             if (state.loginModel?.message == "Successful Login") {
               sharedPreferencesHelper.saveData(
                   key: "loginToken", value: state.loginModel?.token);
+              sharedPreferencesHelper.saveData(
+                  key: "profilePicture", value: state.loginModel?.data?.photo);
+              sharedPreferencesHelper.saveData(
+                  key: "userName", value: state.loginModel?.data?.fullName);
+              sharedPreferencesHelper.saveData(
+                  key: "email", value: state.loginModel?.data?.email);
             }
           }
         },
