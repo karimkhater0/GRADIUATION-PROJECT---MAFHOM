@@ -65,10 +65,43 @@ class _STTScreenState extends State<STTScreen> {
             body: Stack(
               alignment: AlignmentDirectional.topEnd,
               children: [
-                Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    child: CameraPreview(cameraController)),
+                Stack(
+                  alignment: AlignmentDirectional.bottomEnd,
+                  children: [
+                    Container(
+                        height: double.infinity,
+                        width: double.infinity,
+                        child: CameraPreview(cameraController)),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.6),
+
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0,top: 8.0,right: 8.0),
+                            child: Text(
+                              'hi',
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox( height: 100 ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: SafeArea(
@@ -86,6 +119,8 @@ class _STTScreenState extends State<STTScreen> {
                     ),
                   ),
                 ),
+
+
 
               ],
             ),

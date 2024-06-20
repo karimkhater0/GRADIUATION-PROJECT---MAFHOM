@@ -9,6 +9,7 @@ Decoration backgroundDecoration = const BoxDecoration(
       colors: [
         Color(0xfff5f5f5),
         Color(0xffbbcded),
+
         /// ADD HEX COLOR
 
       ],

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mafhom/layout/home_layout.dart';
 import 'package:mafhom/shared/constants.dart';
+import 'package:mafhom/shared/sharedpreferences.dart';
 
 import 'cubit/cubit.dart';
 
@@ -92,8 +94,8 @@ void showToast({
     toastLength: Toast.LENGTH_LONG,
     gravity: ToastGravity.BOTTOM,
     timeInSecForIosWeb: 5,
-    backgroundColor: Colors.green,
-    textColor: Colors.green,
+    backgroundColor: changeToastColor(state),
+    textColor: Colors.white,
     fontSize: 16.0,
   );
 }
@@ -104,11 +106,11 @@ Color changeToastColor(ToastStates state) {
   Color color;
   switch (state) {
     case ToastStates.SUCCESS:
-      color = Colors.grey;
+      color = Colors.black54;
       break;
 
     case ToastStates.ERROR:
-      color = Colors.red;
+      color = Color(0xffc75450);
       break;
 
     case ToastStates.WARNING:
@@ -129,3 +131,61 @@ navigateAndFinish(context, widget) {
     return false;
   });
 }
+
+Widget myDivider() => Padding(
+  padding: const EdgeInsetsDirectional.only(
+    start: 20,
+  ),
+  child: Container(
+    height: 1,
+    width: double.infinity,
+    color: Colors.grey,
+  ),
+);
+
+
+Widget buildSavedItem(String sentence,int index, context) => Dismissible(
+  key: Key(index.toString()),
+  child: Padding(
+    padding: const EdgeInsets.all(20.0),
+    child: Row(
+      children: [
+
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '$sentence',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+
+            ],
+          ),
+        ),
+
+        const SizedBox(width: 20,),
+
+        ///go to home screen
+        IconButton(
+            color: Colors.black45,
+            onPressed: () {
+              print('---------------------------');
+              print(sentence);
+              SharedPreferencesHelper.saveData(key: 'savedSentence', value: sentence).then(
+                      (value) => print('saved successfully'));
+              navigateTo(context, HomeLayout());
+            },
+            icon: const Icon(Icons.arrow_forward_ios)),
+      ],
+    ),
+  ),
+  onDismissed: (direction) {
+    AppCubit.get(context).deleteSavedSentence(index);
+  },
+);
+

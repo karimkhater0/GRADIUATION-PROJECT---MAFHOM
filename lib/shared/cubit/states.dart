@@ -6,58 +6,95 @@ class AppInitialState extends AppStates {}
 
 class AppChangeOnBoardingState extends AppStates {}
 
-class AppChangeBottomNavBarState extends AppStates {}
+class AppChangeBottomNavBarState extends AppStates {
+  String? text;
+  AppChangeBottomNavBarState({this.text});
+}
 
 class ChangePasswordVisibilityState extends AppStates {}
 
+///LOGIN STATES
 class LoginInitialState extends AppStates {}
 
 class LoginSuccessState extends AppStates {
   final LoginModel? loginModel;
 
-  LoginSuccessState({required this.loginModel});
+  LoginSuccessState(this.loginModel);
 }
 
 class LoginLoadingState extends AppStates {}
 
-class RegisterInitialState extends AppStates {}
+class LoginErrorState extends AppStates {}
 
-class RegisterSuccessState extends AppStates {}
+
+///REGISTER STATES
+class RegisterSuccessState extends AppStates {
+  final LoginModel? loginModel;
+
+  RegisterSuccessState(this.loginModel,);
+}
 
 class RegisterLoadingState extends AppStates {}
 
-class ForgetPwInitialState extends AppStates {}
+class RegisterErrorState extends AppStates {}
+
+
+///FORGET PASSWORD STATES
 
 class ForgetPwSuccessState extends AppStates {}
 
 class ForgetPwLoadingState extends AppStates {}
 
-class ChangePwInitialState extends AppStates {}
+class ForgetPwErrorState extends AppStates {}
 
-class ChangePwSuccessState extends AppStates {}
+
+///CHANGE PASSWORD STATES
+class ChangePwSuccessState extends AppStates {
+  final LoginModel? loginModel;
+
+  ChangePwSuccessState(this.loginModel,);
+}
 
 class ChangePwLoadingState extends AppStates {}
-
-class LoginErrorState extends AppStates {
-  final String error;
-  LoginErrorState(this.error);
-}
-
-class RegisterErrorState extends AppStates {
-  final String error;
-  RegisterErrorState(this.error);
-}
-
-class ForgetPwErrorState extends AppStates {
-  final String error;
-  ForgetPwErrorState(this.error);
-}
 
 class ChangePwErrorState extends AppStates {
   final String error;
   ChangePwErrorState(this.error);
 }
 
+/// GET SAVED STATES
+class AppGetSavedSentencesLoadingState extends AppStates{}
+
+class AppGetSavedSentencesSuccessState extends AppStates{}
+
+class AppGetSavedSentencesErrorState extends AppStates{}
+
+/// CREATE SAVED STATES
+class AppCreateSavedSentenceLoadingState extends AppStates{}
+
+class AppCreateSavedSentenceSuccessState extends AppStates{}
+
+class AppCreateSavedSentenceErrorState extends AppStates{}
+
+/// DELETE SAVED STATES
+class AppDeleteSavedSentenceLoadingState extends AppStates{}
+
+class AppDeleteSavedSentenceSuccessState extends AppStates{}
+
+class AppDeleteSavedSentenceErrorState extends AppStates{}
+
+
+class AppInitialListeningState extends AppStates {}
+
 class AppChangeListeningState extends AppStates {}
+
+class AppStartListeningState extends AppStates {}
+class AppStopListeningState extends AppStates {}
+class AppListeningState extends AppStates {
+  final bool isListening;
+  AppListeningState(this.isListening);
+}
+
+class AppErrorListeningState extends AppStates {}
 
 class AppChangeTextState extends AppStates {}

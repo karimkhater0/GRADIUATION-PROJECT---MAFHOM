@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mafhom/modules/login/login_screen.dart';
 import 'package:mafhom/shared/cubit/cubit.dart';
 import 'package:mafhom/shared/sharedpreferences.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../models/onboarding_model.dart';
@@ -39,9 +38,9 @@ class OnBoardingScreen extends StatelessWidget {
     ),
   ];
 
-  var boardController = PageController();
+  final boardController = PageController();
   void onboardingSubmit(context) {
-    sharedPreferencesHelper
+    SharedPreferencesHelper
         .saveData(
       key: "onboardingSubmit",
       value: true,
@@ -55,80 +54,79 @@ class OnBoardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //var cubit = AppCubit.get(context);
 
-    return BlocProvider(
-      create: (BuildContext context) => AppCubit(),
-      child: BlocConsumer<AppCubit, AppStates>(
-        listener: (context, state) {},
-        builder: (context, state) => Scaffold(
-          body: SafeArea(
-            child: Container(
-              decoration: backgroundDecoration,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 5, 20, 12),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                            onPressed: () {
-                              onboardingSubmit(context);
-                            },
-                            child: Text(
-                              'SKIP',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            )),
-                      ],
-                    ),
-                    Expanded(
-                      child: PageView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        controller: boardController,
-                        onPageChanged: (int index) {
-                          AppCubit.get(context).changeOnBoardingPage(index);
-                        },
-                        itemBuilder: (context, index) =>
-                            buildBoardingItem(boarding[index], context),
-                        itemCount: boarding.length,
-                      ),
-                    ),
+    return BlocBuilder<AppCubit, AppStates>(
+      builder: (context, state) => Scaffold(
+        body: SafeArea(
+          child: Container(
+            decoration: backgroundDecoration,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 5, 20, 12),
+              child: Column(
+                children: [
 
-                    ///BUTTONS
-                    AppCubit.get(context).isLast
-                        ? defaultButton(
-                            text: 'Get Started',
-                            backGround: primaryColor,
-                            width: MediaQuery.of(context).size.width * .60,
-                            onPressed: () {
-                              onboardingSubmit(context);
-                            },
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              FloatingActionButton(
-                                onPressed: () {
-                                  boardController.nextPage(
-                                    duration: const Duration(seconds: 1),
-                                    curve: Curves.fastEaseInToSlowEaseOut,
-                                  );
-                                },
-                                backgroundColor: primaryColor,
-                                shape: CircleBorder(),
-                                child: Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Colors.white,
-                                ),
+
+                  ///SKIP
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            onboardingSubmit(context);
+                          },
+                          child: Text(
+                            'SKIP',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          )),
+                    ],
+                  ),
+
+                  Expanded(
+                    child: PageView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      controller: boardController,
+                      onPageChanged: (int index) {
+                        AppCubit.get(context).changeOnBoardingPage(index);
+                      },
+                      itemBuilder: (context, index) =>
+                          buildBoardingItem(boarding[index], context),
+                      itemCount: boarding.length,
+                    ),
+                  ),
+
+                  ///BUTTONS
+                  AppCubit.get(context).isLast
+                      ? defaultButton(
+                          text: 'Get Started',
+                          backGround: primaryColor,
+                          width: MediaQuery.of(context).size.width * .60,
+                          onPressed: () {
+                            onboardingSubmit(context);
+                          },
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            FloatingActionButton(
+                              onPressed: () {
+                                boardController.nextPage(
+                                  duration: const Duration(seconds: 1),
+                                  curve: Curves.fastEaseInToSlowEaseOut,
+                                );
+                              },
+                              backgroundColor: primaryColor,
+                              shape: CircleBorder(),
+                              child: Icon(
+                                Icons.arrow_forward_ios,
+                                color: Colors.white,
                               ),
-                            ],
-                          ),
-                  ],
-                ),
+                            ),
+                          ],
+                        ),
+                ],
               ),
             ),
           ),
