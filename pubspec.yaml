@@ -2,7 +2,7 @@ name: mafhom
 description: EGYPTIAN SIGN LANGUAGE APP
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.1.4 <4.0.0'
+  sdk: ">=3.1.4 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -31,7 +31,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -41,20 +40,21 @@ dependencies:
   flutter_bloc: ^8.1.3
   fluttertoast: ^8.2.4
   dio: ^5.4.0
-  #tflite: ^1.1.2
-  camera: ^0.10.5+9
+  tflite: ^1.1.2
+  camera: ^0.10.5+2
   speech_to_text: ^6.6.1
   avatar_glow: ^3.0.1
   shared_preferences: ^2.2.3
   email_validator: ^2.1.16
+  flutter_tts: ^4.0.2
+  path_provider: ^2.1.3
+  tflite_flutter: ^0.9.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_launcher_icons: ^0.13.1
-
-
 
 flutter_icons:
   image_path_android: "assets/images/logo/logo.png"
@@ -74,9 +74,12 @@ flutter_icons:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
+    - assets/
     - assets/images/onboarding/
     - assets/images/logo/
     - assets/images/login/
+    - assets/model.tflite
+    - assets/labels.txt
 
   fonts:
     - family: Pacifico
