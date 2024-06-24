@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mafhom/layout/home_layout.dart';
@@ -25,6 +26,7 @@ class AppCubit extends Cubit<AppStates> {
 
   List<dynamic> sentences = [];
 
+
   bool isLast = false;
   void changeOnBoardingPage(int index) {
     if (index == 2) {
@@ -36,14 +38,15 @@ class AppCubit extends Cubit<AppStates> {
     }
   }
 
-  void changeToHomeScreen(int index) {
-    currentIndex = 0;
-    emit(AppChangeBottomNavBarState(text: sentences[index]));
-    print('Hola!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+ void changeToHomeScreen(int index){
+   currentIndex = 0;
+   emit(AppChangeBottomNavBarState(text: sentences[index]));
+   print('Hola!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
   }
 
   int currentIndex = 0;
   List<Widget> screens = [
+
     TTSScreen(),
     STTScreen(),
     SavedScreen(),
@@ -85,22 +88,24 @@ class AppCubit extends Cubit<AppStates> {
       // print(value.statusMessage);
       // print(value.statusCode);
       loginModel = LoginModel.fromJson(value.data);
-      if (loginModel?.message == 'Successful Login') {
-        emit(LoginSuccessState(loginModel));
-        showToast(
-            msg: loginModel!.message.toString(), state: ToastStates.SUCCESS);
-        navigateAndFinish(context, HomeLayout());
-      } else {
-        showToast(
-            msg: loginModel!.message.toString(), state: ToastStates.ERROR);
+      if(loginModel?.message =='Successful Login')
+        {
+          emit(LoginSuccessState(loginModel));
+          showToast(msg: loginModel!.message.toString(), state: ToastStates.SUCCESS);
+          navigateAndFinish(context, HomeLayout());
+        }
+      else
+      {
+        showToast(msg: loginModel!.message.toString(), state: ToastStates.ERROR);
         emit(LoginErrorState());
       }
+
     }).catchError((error) {
+
       // print('______________________________');
       // print(error.toString());
       emit(LoginErrorState());
-      showToast(
-          msg: "Login failed, Check connection.", state: ToastStates.ERROR);
+      showToast(msg: "Login failed, Check connection.", state: ToastStates.ERROR);
     });
   }
 
@@ -109,7 +114,7 @@ class AppCubit extends Cubit<AppStates> {
     required String email,
     required String password,
     required String passwordConfirm,
-    required context,
+    required  context,
   }) {
     emit(RegisterLoadingState());
     DioHelper.postData(
@@ -121,72 +126,86 @@ class AppCubit extends Cubit<AppStates> {
         "passwordConfirm": password,
         "fullName": name,
       },
-    ).then((value) {
+    )
+        .then((value) {
       loginModel = LoginModel.fromJson(value.data);
-      if (loginModel?.message == 'Successful Login') {
+      if(loginModel?.message =='Successful Login')
+      {
         emit(RegisterSuccessState(loginModel));
-        showToast(
-            msg: loginModel!.message.toString(), state: ToastStates.SUCCESS);
+        showToast(msg: loginModel!.message.toString(), state: ToastStates.SUCCESS);
         navigateAndFinish(context, HomeLayout());
-      } else {
+      }
+      else
+      {
         emit(RegisterErrorState());
-        showToast(
-            msg: loginModel!.message.toString(), state: ToastStates.ERROR);
+        showToast(msg: loginModel!.message.toString(), state: ToastStates.ERROR);
       }
       print(value.data);
-    }).catchError((error) {
-      showToast(
-          msg: "Login failed, Check connection.", state: ToastStates.ERROR);
+
+    })
+        .catchError((error) {
+      showToast(msg: "Login failed, Check connection.", state: ToastStates.ERROR);
       print(error.message.toString());
       emit(RegisterErrorState());
     });
   }
 
-  void userForgotPassword({required String email, required context}) {
+  void userForgotPassword({required String email,required context})
+  {
     emit(ForgetPwLoadingState());
 
-    DioHelper.postData(url: FORGOTPASSWORD, data: {
-      "email": email,
-    }).then((value) {
-      if (value.data["status"] == "success") {
+    DioHelper.postData(
+        url: FORGOTPASSWORD,
+        data: {
+          "email" : email,
+        }).then((value) {
+      if(value.data["status"] == "success")
+      {
         emit(ForgetPwSuccessState());
         showToast(msg: value.data["message"], state: ToastStates.SUCCESS);
         navigateTo(context, ChangePwScreen());
-      } else {
+      }
+      else
+      {
         emit(ForgetPwErrorState());
         showToast(msg: value.data["message"], state: ToastStates.SUCCESS);
       }
-    }).catchError((error) {
+
+    }).catchError((error){
       print(error.toString());
       emit(ForgetPwErrorState());
     });
+
   }
 
   void userResetPassword({
     required String code,
     required String password,
     required context,
-  }) {
+}) {
     emit(ChangePwLoadingState());
 
-    DioHelper.patchData(url: RESETPASSWORD, data: {
-      "token": code,
-      "password": password,
-      "passwordConfirm": password,
+    DioHelper.patchData(
+        url: RESETPASSWORD,
+        data: {
+      "token" : code,
+      "password" : password,
+      "passwordConfirm" : password,
     }).then((value) {
       loginModel = LoginModel.fromJson(value.data);
-      if (loginModel?.message == 'Successful Login') {
+      if(loginModel?.message =='Successful Login')
+      {
         emit(ChangePwSuccessState(loginModel));
-        showToast(
-            msg: loginModel!.message.toString(), state: ToastStates.SUCCESS);
+        showToast(msg: loginModel!.message.toString(), state: ToastStates.SUCCESS);
         navigateAndFinish(context, HomeLayout());
-      } else {
+      }
+      else
+      {
         emit(ChangePwErrorState(loginModel!.message.toString()));
-        showToast(
-            msg: loginModel!.message.toString(), state: ToastStates.ERROR);
+        showToast(msg: loginModel!.message.toString(), state: ToastStates.ERROR);
       }
       print(value.data);
-    }).catchError((error) {
+    }).catchError((error){
       print(error.toString());
       emit(ChangePwErrorState(error.toString()));
       showToast(msg: "Check connection.", state: ToastStates.ERROR);
@@ -197,7 +216,7 @@ class AppCubit extends Cubit<AppStates> {
 
   SavedSentencesModel? savedSentencesModel;
   void getSavedSentences() {
-    if (sentences.isEmpty) {
+    if(sentences.isEmpty){
       emit(AppGetSavedSentencesLoadingState());
 
       DioHelper.getData(
@@ -209,12 +228,16 @@ class AppCubit extends Cubit<AppStates> {
         print('=========================================');
         print(sentences);
 
+
         emit(AppGetSavedSentencesSuccessState());
-      }).catchError((error) {
+      }).catchError((error){
         print(error.toString());
         emit(AppGetSavedSentencesErrorState());
       });
+
     }
+
+
   }
 
   CreateSavedSentenceModel? createSavedSentenceModel;
@@ -223,15 +246,18 @@ class AppCubit extends Cubit<AppStates> {
     emit(AppCreateSavedSentenceLoadingState());
 
     print(token);
-    DioHelper.postData(url: CREATESAVEDSENTENCE, token: token, data: {
-      "sentence": sentence,
-    }).then((value) {
-      createSavedSentenceModel = CreateSavedSentenceModel.fromJson(value.data);
+    DioHelper.postData(
+        url: CREATESAVEDSENTENCE,
+        token: token,
+        data: {
+          "sentence": sentence,
+        }).then((value) {
+      createSavedSentenceModel =  CreateSavedSentenceModel.fromJson(value.data);
       sentences = createSavedSentenceModel!.data;
       print(sentences);
       emit(AppCreateSavedSentenceSuccessState());
       showToast(msg: 'Sentence Saved Successfully', state: ToastStates.SUCCESS);
-    }).catchError((error) {
+    }).catchError((error){
       print(error.toString());
       emit(AppCreateSavedSentenceErrorState());
     });
@@ -239,7 +265,7 @@ class AppCubit extends Cubit<AppStates> {
 
   DeleteSavedSentenceModel? deleteSavedSentenceModel;
 
-  void deleteSavedSentence(int index) {
+  void deleteSavedSentence(int index){
     emit(AppDeleteSavedSentenceLoadingState());
 
     sentences.removeAt(index);
@@ -247,70 +273,83 @@ class AppCubit extends Cubit<AppStates> {
     DioHelper.deleteData(
         url: DELETESAVEDSENTENCE,
         token: token,
-        data: {"sentenceIndex": index}).then((value) {
+        data: {
+          "sentenceIndex": index
+        }).then((value) {
       deleteSavedSentenceModel = DeleteSavedSentenceModel.fromJson(value.data);
-      sentences = deleteSavedSentenceModel!.data;
+      sentences= deleteSavedSentenceModel!.data;
       print(sentences);
       emit(AppDeleteSavedSentenceSuccessState());
       getSavedSentences();
-    }).catchError((error) {
+    }).catchError((error){
       print(error.toString());
       emit(AppDeleteSavedSentenceErrorState());
     });
+
+
   }
+
+
 
   bool isListening = false;
   SpeechToText speech = SpeechToText();
   String text = '';
 
-  void initializeListening() {
+  void initializeListening()
+  {
     speech = SpeechToText();
     emit(AppInitialListeningState());
   }
 
-  void listen() async {
+  void listen() async{
     /// Arabic Text
     var locales = await speech.locales();
-    var selectedLocale =
-        locales.firstWhere((locale) => locale.localeId.startsWith('ar'));
-
+    var selectedLocale = locales.firstWhere((locale) => locale.localeId.startsWith('ar'));
     /// Listen
-    if (!isListening) {
+    if(!isListening)
+    {
       bool? available = await speech.initialize(
         onStatus: (val) {
           print("onStatus: $val");
-          if (val == "done") {
-            isListening = false;
-            emit(AppStopListeningState());
+          if(val == "done")
+          {
+              isListening = false;
+              emit(AppStopListeningState());
           }
+
         },
         onError: (val) => print("onError: $val"),
       );
-      if (available == true) {
-        isListening = true;
+      if(available == true)
+      {
+        isListening =true;
         emit(AppStartListeningState());
 
         speech.listen(
-          onResult: (val) {
+          onResult: (val)  {
             text = val.recognizedWords;
           },
           localeId: selectedLocale.localeId,
         );
         emit(AppChangeTextState());
+
       }
     } else {
-      isListening = false;
-      speech.stop();
-      emit(AppErrorListeningState());
+
+        isListening = false;
+        speech.stop();
+        emit(AppErrorListeningState());
+
+
     }
 
     print("============== $text");
+
   }
 
   void listen1(bool isListening) async {
     var locales = await speech.locales();
-    var selectedLocale =
-        locales.firstWhere((locale) => locale.localeId.startsWith('ar'));
+    var selectedLocale = locales.firstWhere((locale) => locale.localeId.startsWith('ar'));
     if (!isListening) {
       bool available = await speech.initialize(
         onStatus: (val) {
@@ -326,6 +365,7 @@ class AppCubit extends Cubit<AppStates> {
         speech.listen(
           onResult: (val) {
             text = val.recognizedWords;
+
           },
           localeId: selectedLocale.localeId,
         );
@@ -335,4 +375,5 @@ class AppCubit extends Cubit<AppStates> {
       speech.stop();
     }
   }
+
 }

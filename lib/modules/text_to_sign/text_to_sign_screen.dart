@@ -15,39 +15,39 @@ class TTSScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppCubit, AppStates>(builder: (context, state) {
-      text = SharedPreferencesHelper.getData(key: 'savedSentence');
-      print(text);
-      SharedPreferencesHelper.removeData(key: 'savedSentence');
+    return BlocBuilder<AppCubit,AppStates>(
+      
+      builder: (context,state){
+          text = SharedPreferencesHelper.getData(key: 'savedSentence');
+          print(text);
+          SharedPreferencesHelper.removeData(key: 'savedSentence');
 
-      return Scaffold(
-        body: SafeArea(
-          child: Container(
-            height: screenHeight(context),
-            decoration: backgroundDecoration,
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    ///AVATAR
-                    AvatarWidget(),
-                    SizedBox(
-                      height: screenHeight(context) * .0875,
-                    ),
+        return Scaffold(
+          body: SafeArea(
+            child: Container(
+              height: screenHeight(context),
+              decoration: backgroundDecoration,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      ///AVATAR
+                      AvatarWidget(),
+                      SizedBox(height: screenHeight(context) * .0875,),
 
-                    ///TEXT BOX
-                    TextBoxWidget(
-                      text: text,
-                    ),
-                  ],
+                      ///TEXT BOX
+                      TextBoxWidget(text:text,),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      );
-    });
+        );
+      }
+
+    );
   }
 }
 
@@ -68,7 +68,7 @@ class AvatarWidget extends StatelessWidget {
 }
 
 class TextBoxWidget extends StatefulWidget {
-  TextBoxWidget({this.text, super.key});
+  TextBoxWidget({this.text,super.key});
 
   String? text;
 
@@ -87,9 +87,10 @@ class _TextBoxWidgetState extends State<TextBoxWidget> {
     // TODO: implement initState
     super.initState();
     speech = SpeechToText();
-    if (widget.text != null) {
-      textController.text = widget.text!;
-    }
+    if(widget.text != null)
+      {
+        textController.text = widget.text!;
+      }
   }
 
   @override
@@ -157,6 +158,7 @@ class _TextBoxWidgetState extends State<TextBoxWidget> {
                       }
                     },
                     icon: Icon(Icons.bookmark_border)),
+
               ],
             ),
           ],

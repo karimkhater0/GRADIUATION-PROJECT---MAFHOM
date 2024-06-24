@@ -1,258 +1,212 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:camera/camera.dart';
-import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
-import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:tflite_flutter/tflite_flutter.dart';
-import 'dart:io';
-import 'dart:typed_data';
-import 'dart:math' as math;
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: STTScreen(),
-    );
-  }
-}
+import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 
 class STTScreen extends StatefulWidget {
   @override
-  _STTScreenState createState() => _STTScreenState();
+  _SignLanguageDetectionScreenState createState() =>
+      _SignLanguageDetectionScreenState();
 }
 
-class _STTScreenState extends State<STTScreen> {
-  String answer = "";
-  CameraController? cameraController;
-  CameraImage? cameraImage;
-  bool isModelLoaded = false;
-  List<CameraDescription>? cameras;
-  late Interpreter _interpreter;
+class _SignLanguageDetectionScreenState extends State<STTScreen> {
+  CameraController? _controller;
+  bool _isDetecting = false;
+  bool _isCapturing = false;
+  bool _isLoading = false;
+  String _detectedSentence = '';
+  List<String> _predictions = [];
+  List<XFile> _frameBuffer = [];
+  Timer? _timer;
+  final Logger _logger = Logger();
 
   @override
   void initState() {
     super.initState();
-    loadModel().then((success) {
-      if (success) {
-        setupCamera();
-      } else {
-        print("Failed to load the model. Camera setup aborted.");
+    _initializeCamera();
+  }
+
+  Future<void> _initializeCamera() async {
+    try {
+      final cameras = await availableCameras();
+      _logger.d('Available cameras: ${cameras.length}');
+      final frontCamera = cameras.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.front,
+        orElse: () => cameras.first,
+      );
+      _logger.d('Selected camera: ${frontCamera.name}');
+      _controller = CameraController(
+        frontCamera,
+        ResolutionPreset.medium,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.jpeg,
+      );
+      await _controller!.initialize();
+
+      await _controller!.setZoomLevel(1.0);
+
+      await _controller!.setExposureMode(ExposureMode.auto);
+
+      await _controller!.setFlashMode(FlashMode.auto);
+
+      _logger.d('Camera initialized');
+      if (!mounted) return;
+      setState(() {});
+      _startDetection();
+    } catch (e) {
+      _logger.e('Error initializing camera: $e');
+      _showErrorDialog('Failed to initialize camera: $e');
+    }
+  }
+
+  void _startDetection() {
+    _timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
+      if (!_isDetecting && !_isCapturing) {
+        _captureFrame();
       }
     });
   }
 
-  Future<bool> loadModel() async {
+  Future<void> _captureFrame() async {
+    if (_controller == null ||
+        !_controller!.value.isInitialized ||
+        _isCapturing) {
+      return;
+    }
+    _isCapturing = true;
     try {
-      print("Attempting to load model...");
-
-      _interpreter = await Interpreter.fromAsset('model.tflite');
-
-      var inputShape = _interpreter.getInputTensor(0).shape;
-      var outputShape = _interpreter.getOutputTensor(0).shape;
-      var inputType = _interpreter.getInputTensor(0).type;
-      var outputType = _interpreter.getOutputTensor(0).type;
-
-      print("Model input shape: $inputShape");
-      print("Model output shape: $outputShape");
-      print("Model input type: $inputType");
-      print("Model output type: $outputType");
-
-      print("Model loaded successfully");
-      setState(() {
-        isModelLoaded = true;
-      });
-      return true;
+      final image = await _controller!.takePicture();
+      _addFrameToBuffer(image);
     } catch (e) {
-      print("Error loading model: $e");
-      return false;
+      _logger.e('Error capturing frame: $e');
+    } finally {
+      _isCapturing = false;
     }
   }
 
-  void setupCamera() async {
+  void _addFrameToBuffer(XFile image) {
+    _frameBuffer.add(image);
+    if (_frameBuffer.length >= 30) {
+      _detectSequence();
+    }
+  }
+
+  Future<void> _detectSequence() async {
+    if (_isDetecting) return;
+    _isDetecting = true;
+    setState(() => _isLoading = true);
     try {
-      print("Attempting to setup camera...");
-      cameras = await availableCameras();
-      if (cameras != null && cameras!.isNotEmpty) {
-        print("Camera found");
-        cameraController = CameraController(
-          cameras![1], // Selecting the front camera (index 1)
-          ResolutionPreset.medium,
-        );
+      List<String> base64Frames = [];
+      for (var frame in _frameBuffer.sublist(_frameBuffer.length - 30)) {
+        final bytes = await frame.readAsBytes();
+        final base64Image = base64Encode(bytes);
+        base64Frames.add(base64Image);
+      }
 
-        await cameraController!.initialize();
-        print("Camera initialized");
+      final payload = jsonEncode({
+        'frames': base64Frames,
+      });
 
-        setState(() {});
+      final response = await http
+          .post(
+            Uri.parse('http://192.168.1.13:5000/predict_sequence'),
+            headers: {'Content-Type': 'application/json'},
+            body: payload,
+          )
+          .timeout(Duration(seconds: 30)); // Increase timeout to 30 seconds
 
-        cameraController!.startImageStream((CameraImage image) {
-          print("Received image from camera");
-          if (isModelLoaded) {
-            print("Model is loaded, processing image");
-            setState(() {
-              cameraImage = image;
-            });
-            applyModelOnImage();
-          } else {
-            print("Model not loaded yet");
-          }
+      _logger.d('Response status: ${response.statusCode}');
+      _logger.d('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final result = jsonDecode(response.body);
+        setState(() {
+          _detectedSentence = result['predicted_sentence'];
+          _predictions = List<String>.from(result['predictions']);
         });
       } else {
-        print("No cameras available");
+        _logger.e('Server error: ${response.statusCode}');
+        _showErrorDialog(
+            'Server error occurred: ${response.statusCode}\n${response.body}');
       }
     } catch (e) {
-      print("Error setting up camera: $e");
+      _logger.e('Error during detection: $e');
+      _showErrorDialog('Failed to detect sign language: $e');
+    } finally {
+      setState(() {
+        _isDetecting = false;
+        _isLoading = false;
+      });
+      _frameBuffer.clear();
     }
   }
 
-  Future<void> applyModelOnImage() async {
-    if (cameraImage != null) {
-      try {
-        Float32List inputData = preprocessImage(cameraImage!);
-        var input = inputData.reshape([1, 30, 1662, 1]);
-        var output = List.filled(16, 0.0).reshape([1, 16]);
-        _interpreter.run(input, output);
-
-        List<double> results = output[0].sublist(0, 10).cast<double>();
-
-        final List<String> actions = [
-          'computers',
-          'faculty',
-          'Hello',
-          'I am',
-          'information',
-          'student',
-          'university',
-          'Mansoura',
-          'in',
-          'and'
-        ];
-
-        // Find the index of the highest confidence
-        int maxIndex = results.indexOf(results.reduce(math.max));
-
-        String newAnswer =
-            '${actions[maxIndex]}: ${results[maxIndex].toStringAsFixed(3)}';
-
-        setState(() {
-          answer = newAnswer;
-        });
-        print("Model applied successfully: $newAnswer");
-      } catch (e) {
-        print("Error applying model: $e");
-      }
-    }
-  }
-
-  Float32List preprocessImage(CameraImage image) {
-    int width = image.width;
-    int height = image.height;
-    var img = image.planes[0].bytes;
-
-    // Create a buffer of the correct size and type
-    var convertedBytes = Float32List(30 * 1662);
-
-    // Resize and normalize the image data
-    for (int y = 0; y < 30; y++) {
-      for (int x = 0; x < 1662; x++) {
-        int srcX = (x * width / 1662).floor();
-        int srcY = (y * height / 30).floor();
-        int srcIndex = srcY * width + srcX;
-        int destIndex = y * 1662 + x;
-
-        // Ensure we don't go out of bounds
-        if (srcIndex < img.length && destIndex < convertedBytes.length) {
-          // Normalize the pixel value to 0-1 range
-          convertedBytes[destIndex] = img[srcIndex] / 255.0;
-        }
-      }
-    }
-
-    return convertedBytes;
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   void dispose() {
-    _interpreter.close();
-    cameraController?.dispose();
-    print("Disposed resources");
+    _timer?.cancel();
+    _controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_controller == null || !_controller!.value.isInitialized) {
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final size = MediaQuery.of(context).size;
+    final deviceRatio = size.width / size.height;
+
     return Scaffold(
-      backgroundColor: Colors.teal[900],
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Mafhoom',
-                style: TextStyle(
-                  fontSize: 45.0,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.center,
-              ),
+      // appBar: AppBar(title: Text('Sign Language Detection')),
+      body: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Expanded(
+            child: AspectRatio(
+              aspectRatio: 9 / 16,
+              child: CameraPreview(_controller!),
             ),
-            Expanded(
-              child: cameraController != null &&
-                      cameraController!.value.isInitialized
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: CameraPreview(cameraController!),
-                    )
-                  : Center(child: CircularProgressIndicator()),
+          ),
+          Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Detected Sentence:',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(_detectedSentence, style: TextStyle(fontSize: 16)),
+                SizedBox(height: 16),
+                Text('Recent Predictions:',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(_predictions.join(', '), style: TextStyle(fontSize: 16)),
+              ],
             ),
-            SizedBox(height: 20),
-            ResultDisplay(result: answer),
-            SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ResultDisplay extends StatelessWidget {
-  final String result;
-
-  ResultDisplay({required this.result});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      margin: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: Offset(0, 5),
           ),
         ],
-      ),
-      child: Text(
-        result,
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Colors.teal[900],
-        ),
-        textAlign: TextAlign.center,
       ),
     );
   }
