@@ -150,14 +150,25 @@ Widget buildSavedItem(String sentence,int index, context) => Dismissible(
     padding: const EdgeInsets.all(20.0),
     child: Row(
       children: [
+        ///go to home screen
+        IconButton(
+            color: Colors.black45,
+            onPressed: () {
+              print(sentence);
+              SharedPreferencesHelper.saveData(key: 'savedSentence', value: sentence).then(
+                      (value) => print('saved successfully'));
+              navigateTo(context, HomeLayout());
+            },
+            icon: const Icon(Icons.arrow_back_ios)),
 
         Expanded(
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
                 '$sentence',
+                textAlign: TextAlign.right,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -170,17 +181,8 @@ Widget buildSavedItem(String sentence,int index, context) => Dismissible(
 
         const SizedBox(width: 20,),
 
-        ///go to home screen
-        IconButton(
-            color: Colors.black45,
-            onPressed: () {
-              print('---------------------------');
-              print(sentence);
-              SharedPreferencesHelper.saveData(key: 'savedSentence', value: sentence).then(
-                      (value) => print('saved successfully'));
-              navigateTo(context, HomeLayout());
-            },
-            icon: const Icon(Icons.arrow_forward_ios)),
+
+
       ],
     ),
   ),

@@ -11,7 +11,7 @@ import 'package:mafhom/shared/sharedpreferences.dart';
 
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
-  var formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     var registerFullNameController = TextEditingController();
